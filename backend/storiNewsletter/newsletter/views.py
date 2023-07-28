@@ -18,7 +18,7 @@ def upload_newsletter(request):
 @api_view(['POST'])
 def send_newsletter(request):
     newsletter_id = request.data.get('newsletter_id')
-    newsletter = Newsletter.objects.get(id=newsletter_id)
+    newsletter = Newsletter.objects.get(id=newsletter_id) if newsletter_id else Newsletter.objects.last()
     subscribers = Subscriber.objects.filter(subscribed_newsletters=newsletter)
     if newsletter and subscribers:
         for subscriber in subscribers:
@@ -37,7 +37,7 @@ def send_newsletter(request):
           )
           email.content_subtype = "html"
           if newsletter.document:
-            email.attach_file(newsletter.document.path),
+            email.attach_file(newsletter.document.path)
           email.send()
         return Response({'message': 'Newsletter sent successfully'}, status=status.HTTP_200_OK)
     else:
@@ -56,18 +56,17 @@ def unsubscribe(request, email, newsletter_id):
 
 @api_view(['POST'])
 def add_subscriber(request):
-    email = request.data.get('email')
-    subscribed_newsletters = request.data.get('subscribed_newsletters')
-
+    emails = request.data.get('emails')
+    newsletter_id = request.data.get('subscribed_newsletters')
+    newsletter = Newsletter.objects.get(id=newsletter_id)
     try:
-        subscriber = Subscriber.objects.get(email=email)
-        subscriber.subscribed_newsletters.add(Newsletter.objects.get(id=subscribed_newsletters))
-        subscriber.save()
-        return Response({'message': 'Subscriber added successfully'}, status=status.HTTP_201_CREATED)
-    except Subscriber.DoesNotExist:
-        serializer = SubscriberSerializer(data=request.data)
+        for email in emails:
+            subscriber, created = Subscriber.objects.get_or_create(email=email)
+            subscriber.subscribed_newsletters.add(newsletter)
+            subscriber.save()
+            statusReturn = status.HTTP_201_CREATED if created else status.HTTP_200_OK
         
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'message': 'Subscriber added successfully'}, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'message': 'Subscriber added successfully'}, status=statusReturn)
+    except:
+        return Response({'error': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
+
