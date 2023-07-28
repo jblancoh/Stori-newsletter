@@ -1,0 +1,19 @@
+version: '3.7'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+  backend:
+    build:
+      context: ./backend/storiNewsletter
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/storiNewsletter/.env
+    volumes:
+      - ./backend/storiNewsletter/db.sqlite3:/app/db.sqlite3
