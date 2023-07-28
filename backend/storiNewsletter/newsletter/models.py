@@ -10,9 +10,8 @@ class Newsletter(models.Model):
     
 class Subscriber(models.Model):
     email = models.EmailField(unique=True)
-    is_subscribed = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    newsletter = models.ForeignKey(Newsletter, on_delete=models.CASCADE, null=True, blank=True)
+    subscribed_newsletters = models.ManyToManyField(Newsletter, blank=True)
 
     def __str__(self):
         return self.email
