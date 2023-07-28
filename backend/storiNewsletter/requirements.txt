@@ -1,5 +1,6 @@
 asgiref==3.4.1
 Django==3.2.20
+django-cors-headers==3.10.1
 djangorestframework==3.14.0
 python-decouple==3.8
 pytz==2023.3
