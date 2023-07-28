@@ -9,7 +9,7 @@ export async function POST(request) {
     const category = formData.get('category');
     body.append('document', file);
     body.append('category', category);
-    const res = await fetch('http://localhost:8000/api/upload_newsletter/', {
+    const res = await fetch('http://127.0.0.1:8000/api/upload_newsletter/', {
       method: 'POST',
       headers: {
         'Content-Type': `multipart/form-data; boundary=${body._boundary}`,

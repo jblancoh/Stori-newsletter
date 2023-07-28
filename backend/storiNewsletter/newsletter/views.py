@@ -1,8 +1,8 @@
-from rest_framework.decorators import api_view, parser_classes
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Newsletter, Subscriber
-from .serializers import NewsletterSerializer, SubscriberSerializer
+from .serializers import NewsletterSerializer
 from django.core.mail import send_mail, EmailMessage
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404
