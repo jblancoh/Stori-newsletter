@@ -1,34 +1,25 @@
 'use client'
-// import { addNewsletter } from "@/services/newsletter"
+import { addNewsletter } from "@/services/newsletter"
 import { useState } from "react"
-
-export async function addNewsletter(data) {
-  const formData = new FormData()
-  formData.append('document', data.file)
-  formData.append('category', data.category)
-  const res = await fetch('http://127.0.0.1:8000/api/upload_newsletter/', {
-    method: 'POST',
-    body: formData
-  })
-  const json = await res.json()
-  return json
-}
 
 const NewsletterForm = () => {
   const [category, setCategory] = useState('')
   const [file, setFile] = useState('')
   const [error, setError] = useState(null)
   const [message, setMessage] = useState(null)
+  const [loading, setLoading] = useState(false)
   
   const onSubmit = async (e) => {
     e.preventDefault()
     setError(null)
     setMessage(null)
+    setLoading(true)
     try {
       const response = await addNewsletter({category, file})
-      setMessage(response.message)
-      return 
+      setLoading(false)
+      return setMessage(response.message)
     } catch (error) {
+      setLoading(false)
       return setError(error?.message)
     }
   }
@@ -45,7 +36,7 @@ const NewsletterForm = () => {
     <>
       { error && 
         <div className="toast">
-          <div className="alert alert-info">
+          <div className="alert alert-error">
             <span>{error}</span>
           </div>
         </div>
@@ -66,6 +57,7 @@ const NewsletterForm = () => {
             type="file"
             className="file-input file-input-bordered w-full max-w-xs"
             onChange={handleChange}
+            required
           />
         </div>
         <div className="form-control w-full max-w-xs">
@@ -76,7 +68,7 @@ const NewsletterForm = () => {
             className="select select-bordered"
             onChange={handleChange}
             >
-            <option disabled defaultValue>Selecciona</option>
+            <option value={''}>Selecciona</option>
             <option value={1}>Lo nuevo</option>
             <option value={2}>Finanzas</option>
             <option value={3}>Deportes</option>
@@ -84,8 +76,12 @@ const NewsletterForm = () => {
           </select>
         </div>
         <div className="form-control w-full max-w-xs my-8">
-          <button className="btn btn-primary" type="submit">
-            Subscribe
+          <button
+            className="btn btn-primary"
+            type="submit"
+            disabled={loading}
+          >
+            Crear
           </button>
         </div>
       </form>

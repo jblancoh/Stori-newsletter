@@ -2,9 +2,18 @@ from rest_framework import serializers
 from .models import Newsletter, Subscriber
 
 class NewsletterSerializer(serializers.ModelSerializer):
+    category = serializers.CharField(source='category.name', read_only=True)
+    category_id = serializers.IntegerField(write_only=True)
+    
     class Meta:
         model = Newsletter
-        fields = '__all__'
+        fields = [
+            'id',
+            'category',
+            'category_id',
+            'document',
+            'uploaded_at',
+        ]
 
 class SubscriberSerializer(serializers.ModelSerializer):
     class Meta:
