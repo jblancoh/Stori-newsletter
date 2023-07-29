@@ -2,10 +2,12 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Newsletter, Subscriber
-from .serializers import NewsletterSerializer, SubscriberSerializer
+from .serializers import NewsletterSerializer
 from django.core.mail import send_mail, EmailMessage
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404
+from django.db.models import OuterRef, Subquery
+import re
 
 @api_view(['POST'])
 def upload_newsletter(request):
@@ -19,6 +21,7 @@ def upload_newsletter(request):
 def send_newsletter(request):
     newsletter_id = request.data.get('newsletter_id')
     newsletter = Newsletter.objects.get(id=newsletter_id) if newsletter_id else Newsletter.objects.last()
+    
     subscribers = Subscriber.objects.filter(subscribed_newsletters=newsletter)
     if newsletter and subscribers:
         for subscriber in subscribers:
@@ -57,12 +60,28 @@ def unsubscribe(request, email, newsletter_id):
 @api_view(['POST'])
 def add_subscriber(request):
     emails = request.data.get('emails')
-    newsletter_id = request.data.get('subscribed_newsletters')
-    newsletter = Newsletter.objects.get(id=newsletter_id)
+    
+    emails = emails.split(',') if emails else None
+    newsletters_id = request.data.get('subscribed_newsletters')
+    if not emails or not newsletters_id:
+        return Response({'error': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    newsletters = Newsletter.objects.filter(id__in=newsletters_id)
+    
+    def validate_email(email):
+        email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        return re.match(email_regex, email)
+        
+    
     try:
         for email in emails:
+            email = email.strip()
+            isEmail = validate_email(email)
+            if not isEmail:
+                return Response({'error': 'Invalid email'}, status=status.HTTP_400_BAD_REQUEST)
             subscriber, created = Subscriber.objects.get_or_create(email=email)
-            subscriber.subscribed_newsletters.add(newsletter)
+            for newsletter in newsletters:
+                subscriber.subscribed_newsletters.add(newsletter)
             subscriber.save()
             statusReturn = status.HTTP_201_CREATED if created else status.HTTP_200_OK
         
@@ -70,3 +89,15 @@ def add_subscriber(request):
     except:
         return Response({'error': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['GET'])
+def get_newsletters(request):
+    
+    last_newsletter_ids = Newsletter.objects.filter(
+        category=OuterRef('category')
+    ).order_by('-id').values('id')[:1]
+    
+    newsletters_with_category = Newsletter.objects.filter(id__in=Subquery(last_newsletter_ids))
+    last_newsletter_without_category = Newsletter.objects.filter(category__isnull=True).order_by('-id').first()
+    newsletters = newsletters_with_category | Newsletter.objects.filter(id=last_newsletter_without_category.id)
+    serializer = NewsletterSerializer(newsletters, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
