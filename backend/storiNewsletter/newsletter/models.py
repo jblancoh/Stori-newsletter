@@ -17,7 +17,7 @@ class Newsletter(models.Model):
 class Subscriber(models.Model):
     email = models.EmailField(unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    subscribed_newsletters = models.ManyToManyField(Newsletter, blank=True)
+    subscribed_newsletters = models.ManyToManyField(CategoryNewsletter, blank=True)
 
     def __str__(self):
         return self.email
