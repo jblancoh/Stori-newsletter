@@ -6,7 +6,6 @@ from .serializers import NewsletterSerializer
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404
-from django.db.models import OuterRef, Subquery
 import re
 
 @api_view(['POST'])
@@ -92,13 +91,11 @@ def add_subscriber(request):
 
 @api_view(['GET'])
 def get_newsletters(request):
-    
-    last_newsletter_ids = Newsletter.objects.filter(
-        category=OuterRef('category')
-    ).order_by('-id').values('id')[:1]
-    
-    newsletters_with_category = Newsletter.objects.filter(id__in=Subquery(last_newsletter_ids))
-    last_newsletter_without_category = Newsletter.objects.filter(category__isnull=True).order_by('-id').first()
-    newsletters = newsletters_with_category | Newsletter.objects.filter(id=last_newsletter_without_category.id)
+    categories = CategoryNewsletter.objects.all()
+    newsletters = []
+    for category in categories:
+        category.last = Newsletter.objects.filter(category__id=category.id).order_by('-id').first()
+        if category.last:
+            newsletters.append(category.last)
     serializer = NewsletterSerializer(newsletters, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
