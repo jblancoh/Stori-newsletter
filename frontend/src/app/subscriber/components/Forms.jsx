@@ -1,4 +1,6 @@
 'use client'
+import { getNewsletterList } from "@/services/newsletter"
+import useStore from "@/store"
 import { useState, useEffect } from "react"
 
 const addSubscriber = async (emails, newsletters) => {
@@ -16,12 +18,13 @@ const addSubscriber = async (emails, newsletters) => {
   return json
 }
 
-const SubscriberForm = ({list}) => {
+const SubscriberForm = () => {
   const [error, setError] = useState(null)
   const [message, setMessage] = useState(null)
   const [loading, setLoading] = useState(false)
   const [emails, setEmails] = useState("")
-  const [newsletters, setNewsletters] = useState([])
+  const [newslettersSelected, setNewslettersSelected] = useState([])
+  const newsletters = useStore(state => state.newsletters)
   
   const onSubmit = async (e) => {
     e.preventDefault()
@@ -29,7 +32,7 @@ const SubscriberForm = ({list}) => {
     setMessage(null)
     setLoading(true)
     try {
-      const response = await addSubscriber(emails, newsletters)
+      const response = await addSubscriber(emails, newslettersSelected)
       if (response.status) {
         setLoading(false)
         return setError(response.message)
@@ -50,12 +53,15 @@ const SubscriberForm = ({list}) => {
         value.push(options[i].value)
       }
     }
-    setNewsletters(value)
+    setNewslettersSelected(value)
   }
-
+  
   useEffect(() => {
-    list?.status && setError(list?.message)
-  }, [list])
+    const getList = async () => {
+      await getNewsletterList()
+    }
+    getList()
+  }, [])
 
   return (
     <>
@@ -80,7 +86,7 @@ const SubscriberForm = ({list}) => {
           </label>
           <textarea
             className="textarea textarea-bordered"
-            placeholder="Agregar emails y separar por comas"
+            placeholder="Agregar email(s) y separar por comas"
             onChange={(e) => setEmails(e.target.value)}
             required
           >
@@ -94,7 +100,7 @@ const SubscriberForm = ({list}) => {
             required
             >
             <option className="select-none" value="" disabled>Seleccione un newsletter</option>
-            { list.length > 0 && list?.map((item) => (
+            {newsletters?.length > 0 && newsletters?.map((item) => (
               <option key={item.id} value={item.id}>{item.category || 'Sin categoria'}</option>
             ))}
           </select>
