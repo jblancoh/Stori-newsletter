@@ -9,14 +9,14 @@ const Navbar = () => {
         </span>
       </div>
       <div className="flex-none">
-        <Link href="newsletter">
+        <Link href="/newsletter">
           <button className="btn btn-ghost btn-sm rounded-btn">
             Newsletter
           </button>
         </Link>
-        <Link href="subscriber">
+        <Link href="/subscriber">
           <button className="btn btn-ghost btn-sm rounded-btn">
-            Subscribir
+            Suscribir
           </button>
         </Link>
       </div>
