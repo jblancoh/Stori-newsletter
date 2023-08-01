@@ -7,4 +7,5 @@ urlpatterns = [
     path('unsubscribe/<str:email>/<int:newsletter_category_id>/', views.unsubscribe, name='unsubscribe'),
     path('add_subscriber/', views.add_subscriber, name='add_subscriber'),
     path('newsletter_list/', views.get_newsletters, name='get_newsletters'),
+    path('get_statistics/', views.get_statistics, name='get_statistics'),
 ]
