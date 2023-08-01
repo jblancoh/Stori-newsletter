@@ -17,3 +17,8 @@ services:
       - ./backend/storiNewsletter/.env
     volumes:
       - ./backend/storiNewsletter/db.sqlite3:/app/db.sqlite3
+  celery_worker:
+    build:
+      context: ./backend/storiNewsletter
+    command: celery -A storiNewsletter worker --loglevel=info
+   

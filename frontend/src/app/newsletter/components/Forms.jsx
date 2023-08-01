@@ -8,6 +8,7 @@ const NewsletterForm = () => {
   const [error, setError] = useState(null)
   const [message, setMessage] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [date, setDate] = useState(null)
   
   const onSubmit = async (e) => {
     e.preventDefault()
@@ -15,7 +16,7 @@ const NewsletterForm = () => {
     setMessage(null)
     setLoading(true)
     try {
-      const response = await addNewsletter({category, file})
+      const response = await addNewsletter({category, file, date})
       setLoading(false)
       return setMessage(response.message)
     } catch (error) {
@@ -28,6 +29,9 @@ const NewsletterForm = () => {
     const type = e.target.type
     if (type === 'file') {
       return setFile(e.target.files[0])
+    }
+    if (type === 'datetime-local') {
+      return setDate(e.target.value)
     }
     return setCategory(e.target.value)
   }
@@ -74,6 +78,16 @@ const NewsletterForm = () => {
             <option value={3}>Deportes</option>
             <option value={4}>Peliculas</option>
           </select>
+        </div>
+        <div className="form-control w-full max-w-xs my-8">
+          <label className="label">
+            <span className="label-text">Fecha de publicación</span>
+          </label>
+          <input
+            type="datetime-local"
+            className="input input-bordered"
+            onChange={handleChange}
+          />
         </div>
         <div className="form-control w-full max-w-xs my-8">
           <button

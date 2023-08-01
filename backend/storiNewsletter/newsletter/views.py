@@ -1,19 +1,30 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Newsletter, Subscriber, CategoryNewsletter
+from .models import Newsletter, Subscriber, CategoryNewsletter, ScheduledNewsletter
 from .serializers import NewsletterSerializer
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404
 import re
+import datetime
+
 
 @api_view(['POST'])
 def upload_newsletter(request):
     serializer = NewsletterSerializer(data=request.data)
+    scheduled_time = request.data.get('scheduled_time')
+    
+    print("🚀 ~ file: views.py:17 ~ scheduled_time:", scheduled_time)
     if serializer.is_valid():
-        serializer.save()
+        newsletter = serializer.save()
+        if scheduled_time:
+            scheduled_time = datetime.datetime.strptime(scheduled_time, '%Y-%m-%dT%H:%M')
+            print("🚀 ~ file: views.py:25 ~ scheduled_time>>>>:", scheduled_time)
+            scheduled_newsletter = ScheduledNewsletter.objects.create(category=newsletter.category, scheduled_time=scheduled_time)
+            scheduled_newsletter.create_periodic_task()
         return Response({'message': 'Newsletter uploaded successfully'}, status=status.HTTP_201_CREATED)
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
@@ -84,7 +95,6 @@ def add_subscriber(request):
                 
             subscriber.save()
             statusReturn = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-        
         return Response({'message': 'Subscriber added successfully'}, status=statusReturn)
     except:
         return Response({'error': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)

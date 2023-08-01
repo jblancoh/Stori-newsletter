@@ -1,0 +1,17 @@
+FROM python:3.6.8-alpine
+
+ENV DJANGO_SETTINGS_MODULE=storiNewsletter.settings
+
+WORKDIR /app
+
+COPY .env /app/
+COPY requirements.txt /app/
+COPY . /app/
+
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+RUN pip install python-decouple
+
+COPY . .
+
+CMD celery -A storiNewsletter worker --loglevel=info
