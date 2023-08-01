@@ -99,3 +99,15 @@ def get_newsletters(request):
             newsletters.append(category.last)
     serializer = NewsletterSerializer(newsletters, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def get_statistics(request):
+    num_sent_mails = Newsletter.objects.count()
+    num_recipients = Recipient.objects.count()
+
+    data = {
+        'num_sent_mails': num_sent_mails,
+        'num_recipients': num_recipients,
+    }
+
+    return Response(data, status=status.HTTP_200_OK)
