@@ -10,7 +10,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 RUN pip install python-decouple
 
+COPY initial_data.json /app/
+
 COPY . /app
+
+RUN python manage.py loaddata initial_data.json
 
 EXPOSE 8000
 
