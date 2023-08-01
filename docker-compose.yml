@@ -20,5 +20,6 @@ services:
   celery_worker:
     build:
       context: ./backend/storiNewsletter
+      dockerfile: Dockerfile.celery
     command: celery -A storiNewsletter worker --loglevel=info
    
