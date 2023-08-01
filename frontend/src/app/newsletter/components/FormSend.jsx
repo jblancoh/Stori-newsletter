@@ -18,6 +18,7 @@ const FormSend = () => {
     const onSubmit = async (e) => {
       e.preventDefault()
       setLoading(true)
+      setMessage(null)
       const response = await sendNewsletter({ newsletter_category_id: newslettersSelected })
       setMessage(response?.message)
       setLoading(false)
@@ -32,7 +33,7 @@ const FormSend = () => {
             </div>
           </div>
         }
-        <form className="mx-auto" onSubmit={onSubmit}>
+        <form  onSubmit={onSubmit}>
           <div className="form-control w-full max-w-xs">
             <label className="label">
               <span className="label-text">Selecciona un newsletter</span>

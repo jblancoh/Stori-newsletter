@@ -19,6 +19,11 @@ const Navbar = () => {
             Suscribir
           </button>
         </Link>
+        <Link href="/statistics">
+          <button className="btn btn-ghost btn-sm rounded-btn">
+            Estadística
+          </button>
+        </Link>
       </div>
     </div>
   )
