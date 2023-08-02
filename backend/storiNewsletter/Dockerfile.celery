@@ -8,10 +8,18 @@ COPY .env /app/
 COPY requirements.txt /app/
 COPY . /app/
 
+# Create a user to run Celery
+USER root
+
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 RUN pip install python-decouple
 
-COPY . .
+RUN adduser -D celery_user
 
-CMD celery -A storiNewsletter worker --loglevel=info
+RUN chown -R celery_user /app
+
+# switch to this new user
+USER celery_user
+
+CMD celery -A storiNewsletter worker --loglevel=info --uid=$(id -u celery_user)

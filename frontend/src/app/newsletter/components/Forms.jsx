@@ -79,7 +79,7 @@ const NewsletterForm = () => {
             <option value={4}>Peliculas</option>
           </select>
         </div>
-        <div className="form-control w-full max-w-xs my-8">
+        <div className="form-control w-full max-w-xs">
           <label className="label">
             <span className="label-text">Fecha de publicación</span>
           </label>

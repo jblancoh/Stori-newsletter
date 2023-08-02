@@ -13,9 +13,11 @@ RUN pip install python-decouple
 
 COPY initial_data.json /app/
 
-COPY . /app
+COPY . .
 
-RUN python manage.py loaddata initial_data.json
+RUN python manage.py makemigrations
+RUN python manage.py migrate
+# RUN python manage.py loaddata initial_data.json
 
 EXPOSE 8000
 

@@ -7,6 +7,8 @@ const FormSend = () => {
     const [newslettersSelected, setNewslettersSelected] = useState(null)
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState(null)
+    const [error, setError] = useState(null)
+    
     const newsletters = useStore(state => state.newsletters)
     useEffect(() => {
       const getList = async () => {
@@ -19,9 +21,14 @@ const FormSend = () => {
       e.preventDefault()
       setLoading(true)
       setMessage(null)
-      const response = await sendNewsletter({ newsletter_category_id: newslettersSelected })
-      setMessage(response?.message)
-      setLoading(false)
+      try {
+        const response = await sendNewsletter({ newsletter_category_id: newslettersSelected })
+        setMessage(response?.message)
+        setLoading(false)
+      } catch (error) {
+        setError(error?.message)
+        setLoading(false)
+      }
     }
   
     return (
@@ -30,6 +37,13 @@ const FormSend = () => {
           <div className="toast">
             <div className="alert alert-success">
               <span>{message}</span>
+            </div>
+          </div>
+        }
+        { error &&
+          <div className="toast">
+            <div className="alert alert-error">
+              <span>{error}</span>
             </div>
           </div>
         }
@@ -44,7 +58,7 @@ const FormSend = () => {
             >
               <option value={''}>Selecciona</option>
               {newsletters?.length > 0 && newsletters?.map((item) => (
-                <option key={item.id} value={item.id}>{item.category || 'Sin categoria'}</option>
+                <option key={item?.category_id} value={item?.category_id}>{item.category || 'Sin categoria'}</option>
               ))}
             </select>
           </div>

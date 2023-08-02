@@ -7,6 +7,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - backend
   backend:
     build:
       context: ./backend/storiNewsletter
@@ -17,9 +21,38 @@ services:
       - ./backend/storiNewsletter/.env
     volumes:
       - ./backend/storiNewsletter/db.sqlite3:/app/db.sqlite3
+    depends_on:
+      - redis
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
+    container_name: redis
   celery_worker:
     build:
       context: ./backend/storiNewsletter
       dockerfile: Dockerfile.celery
     command: celery -A storiNewsletter worker --loglevel=info
-   
+    depends_on:
+      - backend
+      - redis
+  celery_beat:
+    build:
+      context: ./backend/storiNewsletter
+      dockerfile: Dockerfile.celery
+    command: celery -A storiNewsletter beat --scheduler django_celery_beat.schedulers:DatabaseScheduler --loglevel=info
+    user: 1000:1000
+    depends_on:
+      - backend
+      - redis
+  flower:
+    build:
+      context: ./backend/storiNewsletter
+      dockerfile: Dockerfile.celery
+    command: celery -A storiNewsletter flower --port=5555 --broker=redis://redis:6379/0
+    ports:
+      - "5555:5555"
+    depends_on:
+      - backend
+      - redis
+  

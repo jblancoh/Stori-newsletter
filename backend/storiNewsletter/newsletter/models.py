@@ -3,6 +3,7 @@ from django.core.validators import FileExtensionValidator
 from django_celery_beat.models import PeriodicTask, CrontabSchedule
 import json
 import random
+from django.utils.timezone import now
 
 class CategoryNewsletter(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
@@ -38,7 +39,7 @@ class ScheduledNewsletter(models.Model):
             month_of_year=self.scheduled_time.strftime('%m')
         )
         
-        name = f"Enviar newsletter: {self.category.name} + {random.randint(1, 1000)}"
+        name = f"Enviar newsletter: {self.category.name}_{random.randint(1, 1000)}"
         task = PeriodicTask.objects.create(
             crontab=schedule,
             name=name,

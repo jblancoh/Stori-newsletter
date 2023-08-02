@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const res = await fetch('http://127.0.0.1:8000/api/newsletter_list/', {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/newsletter_list/`, {
     headers: {
       'Content-Type': 'application/json'
     }
@@ -12,8 +12,7 @@ export async function GET() {
 
 export async function POST(request) {
   const body = await request.json()
-  console.log(body);
-  const res = await fetch('http://127.0.0.1:8000/api/send_newsletter/', {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/send_newsletter/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
