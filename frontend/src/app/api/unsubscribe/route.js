@@ -5,7 +5,7 @@ export async function GET(request) {
   const email = searchParams.get('email')
   const categoryId = searchParams.get('categoryId')
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/unsubscriber/${email}/${categoryId}/`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/unsubscribe/${email}/${categoryId}/`, {
       headers: {
         'Content-Type': 'application/json'
       }
