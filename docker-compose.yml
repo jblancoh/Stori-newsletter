@@ -9,6 +9,7 @@ services:
       - "3000:3000"
     volumes:
       - ./frontend:/app
+      - ./backend/storiNewsletter/media:/app/media
     depends_on:
       - backend
   backend:
@@ -21,6 +22,7 @@ services:
       - ./backend/storiNewsletter/.env
     volumes:
       - ./backend/storiNewsletter/db.sqlite3:/app/db.sqlite3
+      - ./backend/storiNewsletter/media:/app/media
     depends_on:
       - redis
   redis:
