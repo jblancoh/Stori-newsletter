@@ -36,7 +36,7 @@ def send_newsletter(request):
           
           email_context = {
               'subscriber_name': subscriber.email,
-              'unsubscribe_link': f'{config("FRONTEND_URL")}/{subscriber.email}/{newsletter.category.id}/',
+              'unsubscribe_link': f'{config("FRONTEND_URL")}/unsubscribe/{subscriber.email}/{newsletter.category.id}/',
           }
           email_subject = 'Stori Newsletter'
           email_body = render_to_string('emails/newsletter_email.html', email_context)
