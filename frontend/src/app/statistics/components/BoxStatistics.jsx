@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 
 const getStatistics = async () => {
-  const res = await fetch(`/api/statistics/`, { cache: 'no-store' })
+  const res = await fetch(`/api/statistics/`)
   if (!res.ok) {
     return { message: 'Error al obtener las estadisticas', status: res.status }
   }

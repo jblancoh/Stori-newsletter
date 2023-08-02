@@ -14,7 +14,7 @@ export async function addNewsletter (data) {
 }
 
 export async function getNewsletterList() {
-  const res = await fetch('/api/newsletter/', { cache: 'no-store' })
+  const res = await fetch('/api/newsletter/')
   if (!res.ok) {
     return { message: 'Error al obtener la lista de newsletters', status: res.status }
   }  

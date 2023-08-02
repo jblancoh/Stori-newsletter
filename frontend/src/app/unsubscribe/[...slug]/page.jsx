@@ -1,10 +1,10 @@
 'use client'
 import { useEffect, useState } from "react"
 
-const getUnsubscriber = async (slug) => {
+const getUnsubscribe = async (slug) => {
   const email = slug[0]
   const categoryId = slug[1]
-  const res = await fetch(`/api/unsubscriber/?email=${email}&categoryId=${categoryId}`, {
+  const res = await fetch(`/api/unsubscribe/?email=${email}&categoryId=${categoryId}`, {
     method: 'GET',
   })
   const data = await res.json()
@@ -17,7 +17,7 @@ export default function Page({params}) {
   
   useEffect(() => {
     const unsubscribe = async () => {
-      const data = await getUnsubscriber(params.slug)
+      const data = await getUnsubscribe(params.slug)
       if(data?.error) return setError(data.error)
       setData(data)
     }

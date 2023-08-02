@@ -1,6 +1,9 @@
 'use client'
+import { useState, useEffect } from "react"
+import useStore from "@/store"
 import { addNewsletter } from "@/services/newsletter"
-import { useState } from "react"
+import { getNewsletterList } from "@/services/newsletter"
+
 
 const NewsletterForm = () => {
   const [category, setCategory] = useState('')
@@ -9,6 +12,8 @@ const NewsletterForm = () => {
   const [message, setMessage] = useState(null)
   const [loading, setLoading] = useState(false)
   const [date, setDate] = useState(null)
+  const newsletters = useStore(state => state.newsletters)
+  console.log("🚀 ~ file: Forms.jsx:16 ~ NewsletterForm ~ newsletters:", newsletters)
   
   const onSubmit = async (e) => {
     e.preventDefault()
@@ -35,6 +40,13 @@ const NewsletterForm = () => {
     }
     return setCategory(e.target.value)
   }
+  
+  useEffect(() => {
+    const getList = async () => {
+      await getNewsletterList()
+    }
+    getList()
+  }, [])
 
   return (
     <>
@@ -68,15 +80,14 @@ const NewsletterForm = () => {
           <label className="label">
             <span className="label-text">Selecciona una categoria</span>
           </label>
-          <select 
+          <select
             className="select select-bordered"
             onChange={handleChange}
-            >
-            <option value={''}>Selecciona</option>
-            <option value={1}>Lo nuevo</option>
-            <option value={2}>Finanzas</option>
-            <option value={3}>Deportes</option>
-            <option value={4}>Peliculas</option>
+            required
+          >
+            {newsletters?.length > 0 && newsletters?.map((item) => (
+              <option key={item.category_id} value={item.category_id}>{item.category || 'Sin categoria'}</option>
+            ))}
           </select>
         </div>
         <div className="form-control w-full max-w-xs">

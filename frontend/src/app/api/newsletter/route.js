@@ -4,7 +4,8 @@ export async function GET() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/newsletter_list/`, {
     headers: {
       'Content-Type': 'application/json'
-    }
+    },
+    cache: 'no-store'
   })
   const json = await res.json()
   return NextResponse.json(json)
