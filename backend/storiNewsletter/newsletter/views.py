@@ -8,19 +8,17 @@ from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404
 import re
 import datetime
-
+from decouple import config
 
 @api_view(['POST'])
 def upload_newsletter(request):
     serializer = NewsletterSerializer(data=request.data)
-    scheduled_time = request.data.get('scheduled_time')
+    scheduled_time = request.data.get('scheduled_time') if request.data.get('scheduled_time') != 'null' else None
     
-    print("🚀 ~ file: views.py:17 ~ scheduled_time:", scheduled_time)
     if serializer.is_valid():
         newsletter = serializer.save()
-        if scheduled_time:
+        if scheduled_time is not None:
             scheduled_time = datetime.datetime.strptime(scheduled_time, '%Y-%m-%dT%H:%M')
-            print("🚀 ~ file: views.py:25 ~ scheduled_time>>>>:", scheduled_time)
             scheduled_newsletter = ScheduledNewsletter.objects.create(category=newsletter.category, scheduled_time=scheduled_time)
             scheduled_newsletter.create_periodic_task()
         return Response({'message': 'Newsletter uploaded successfully'}, status=status.HTTP_201_CREATED)
@@ -38,7 +36,7 @@ def send_newsletter(request):
           
           email_context = {
               'subscriber_name': subscriber.email,
-              'unsubscribe_link': f'http://localhost:8000/api/unsubscribe/{subscriber.email}/{newsletter.category.id}/',
+              'unsubscribe_link': f'{config("FRONTEND_URL")}/{subscriber.email}/{newsletter.category.id}/',
           }
           email_subject = 'Stori Newsletter'
           email_body = render_to_string('emails/newsletter_email.html', email_context)

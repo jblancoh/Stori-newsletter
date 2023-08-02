@@ -3,7 +3,6 @@ from django.core.validators import FileExtensionValidator
 from django_celery_beat.models import PeriodicTask, CrontabSchedule
 import json
 import random
-from django.utils.timezone import now
 
 class CategoryNewsletter(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
