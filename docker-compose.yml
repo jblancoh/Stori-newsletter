@@ -10,6 +10,7 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
+      - /app/.next
       - ./backend/storiNewsletter/media:/app/media
     depends_on:
       - backend
