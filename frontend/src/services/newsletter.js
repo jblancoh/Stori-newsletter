@@ -5,7 +5,7 @@ export async function addNewsletter (data) {
   formData.append('document', data.file)
   formData.append('category_id', data.category)
   formData.append('scheduled_time', data.date)
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_CLIENT}/api/upload_newsletter/`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/upload_newsletter/`, {
     method: 'POST',
     body: formData
   })
