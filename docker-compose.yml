@@ -2,18 +2,49 @@ version: '3.7'
 
 services:
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: jblancoh/stori-frontend:latest
     ports:
       - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - ./backend/storiNewsletter/media:/app/media
+    depends_on:
+      - backend
   backend:
-    build:
-      context: ./backend/storiNewsletter
-      dockerfile: Dockerfile
+    image: jblancoh/stori-backend:latest
     ports:
       - "8000:8000"
     env_file:
       - ./backend/storiNewsletter/.env
     volumes:
       - ./backend/storiNewsletter/db.sqlite3:/app/db.sqlite3
+      - ./backend/storiNewsletter/media:/app/media
+    depends_on:
+      - redis
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
+    container_name: redis
+  celery_worker:
+    image: jblancoh/stori-celery:latest
+    command: celery -A storiNewsletter worker --loglevel=info
+    depends_on:
+      - backend
+      - redis
+  celery_beat:
+    image: jblancoh/stori-celery:latest
+    command: celery -A storiNewsletter beat --scheduler django_celery_beat.schedulers:DatabaseScheduler --loglevel=info
+    user: 1000:1000
+    depends_on:
+      - backend
+      - redis
+  flower:
+    image: jblancoh/stori-celery:latest
+    command: celery -A storiNewsletter flower --port=5555 --broker=redis://redis:6379/0
+    ports:
+      - "5555:5555"
+    depends_on:
+      - backend
+      - redis
+

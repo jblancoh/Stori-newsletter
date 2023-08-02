@@ -1,6 +1,8 @@
+'use client'
+import { useEffect, useState } from "react"
 
 const getStatistics = async () => {
-  const res = await fetch(`http://localhost:3000/api/statistics/`, { cache: 'no-store' })
+  const res = await fetch(`/api/statistics/`, { cache: 'no-store' })
   if (!res.ok) {
     return { message: 'Error al obtener las estadisticas', status: res.status }
   }
@@ -8,9 +10,16 @@ const getStatistics = async () => {
   return data
 }
 
-const BoxStatistics = async() => {
+const BoxStatistics = () => {
+  const [dataStatistics, setDataStatistics] = useState(null)
   
-  const dataStatistics = await getStatistics()
+  useEffect(() => {
+    const getStats = async () => {
+      const response = await getStatistics()
+      return setDataStatistics(response)
+    }
+    getStats()
+  }, [])
   
   return (
     <div className="grid grid-cols-1 gap-4">

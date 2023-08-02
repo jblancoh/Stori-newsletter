@@ -4,7 +4,8 @@ export async function addNewsletter (data) {
   const formData = new FormData()
   formData.append('document', data.file)
   formData.append('category_id', data.category)
-  const res = await fetch('http://127.0.0.1:8000/api/upload_newsletter/', {
+  formData.append('scheduled_time', data.date)
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_CLIENT}/api/upload_newsletter/`, {
     method: 'POST',
     body: formData
   })
@@ -13,7 +14,7 @@ export async function addNewsletter (data) {
 }
 
 export async function getNewsletterList() {
-  const res = await fetch('http://localhost:3000/api/newsletter/', { cache: 'no-store' })
+  const res = await fetch('/api/newsletter/', { cache: 'no-store' })
   if (!res.ok) {
     return { message: 'Error al obtener la lista de newsletters', status: res.status }
   }  
@@ -24,7 +25,7 @@ export async function getNewsletterList() {
 }
 
 export async function sendNewsletter(data) {
-  const res = await fetch('http://localhost:3000/api/newsletter/', {
+  const res = await fetch('/api/newsletter/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

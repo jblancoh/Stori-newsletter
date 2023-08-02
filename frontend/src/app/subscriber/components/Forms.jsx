@@ -4,7 +4,7 @@ import useStore from "@/store"
 import { useState, useEffect } from "react"
 
 const addSubscriber = async (emails, newsletters) => {
-  const res = await fetch('http://localhost:3000/api/subscriber/', {
+  const res = await fetch('/api/subscriber/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
