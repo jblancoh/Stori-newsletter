@@ -1,0 +1,25 @@
+FROM python:3.9.13-alpine
+
+ENV DJANGO_SETTINGS_MODULE=storiNewsletter.settings
+
+WORKDIR /app
+
+COPY .env /app/
+COPY requirements.txt /app/
+COPY . /app/
+
+# Create a user to run Celery
+USER root
+
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+RUN pip install python-decouple
+
+RUN adduser -D celery_user
+
+RUN chown -R celery_user /app
+
+# switch to this new user
+USER celery_user
+
+CMD celery -A storiNewsletter worker --loglevel=info --uid=$(id -u celery_user)

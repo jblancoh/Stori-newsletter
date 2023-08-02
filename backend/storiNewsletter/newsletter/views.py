@@ -1,19 +1,28 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Newsletter, Subscriber, CategoryNewsletter
+from .models import Newsletter, Subscriber, CategoryNewsletter, ScheduledNewsletter
 from .serializers import NewsletterSerializer
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404
 import re
+import datetime
+from decouple import config
 
 @api_view(['POST'])
 def upload_newsletter(request):
     serializer = NewsletterSerializer(data=request.data)
+    scheduled_time = request.data.get('scheduled_time') if request.data.get('scheduled_time') != 'null' else None
+    
     if serializer.is_valid():
-        serializer.save()
+        newsletter = serializer.save()
+        if scheduled_time is not None:
+            scheduled_time = datetime.datetime.strptime(scheduled_time, '%Y-%m-%dT%H:%M')
+            scheduled_newsletter = ScheduledNewsletter.objects.create(category=newsletter.category, scheduled_time=scheduled_time)
+            scheduled_newsletter.create_periodic_task()
         return Response({'message': 'Newsletter uploaded successfully'}, status=status.HTTP_201_CREATED)
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
@@ -27,7 +36,7 @@ def send_newsletter(request):
           
           email_context = {
               'subscriber_name': subscriber.email,
-              'unsubscribe_link': f'http://localhost:8000/api/unsubscribe/{subscriber.email}/{newsletter.category.id}/',
+              'unsubscribe_link': f'{config("FRONTEND_URL")}/{subscriber.email}/{newsletter.category.id}/',
           }
           email_subject = 'Stori Newsletter'
           email_body = render_to_string('emails/newsletter_email.html', email_context)
@@ -84,7 +93,6 @@ def add_subscriber(request):
                 
             subscriber.save()
             statusReturn = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-        
         return Response({'message': 'Subscriber added successfully'}, status=statusReturn)
     except:
         return Response({'error': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
