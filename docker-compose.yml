@@ -25,6 +25,7 @@ services:
     volumes:
       # - ./backend/storiNewsletter/db.sqlite3:/app/db.sqlite3
       - ./backend/storiNewsletter/media:/app/media
+      - db_volume:/app/
     depends_on:
       - redis
   redis:
@@ -59,4 +60,7 @@ services:
     depends_on:
       - backend
       - redis
+volumes:
+  db_volume:
+    driver: local
 
