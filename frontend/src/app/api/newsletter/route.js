@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
+  console.log('>>>>>>>', process.env.NEXT_PUBLIC_API_URL);
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/newsletter_list/`, {
     headers: {
       'Content-Type': 'application/json'

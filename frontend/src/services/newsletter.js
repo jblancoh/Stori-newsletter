@@ -14,7 +14,9 @@ export async function addNewsletter (data) {
 }
 
 export async function getNewsletterList() {
-  const res = await fetch('/api/newsletter/')
+  console.log('>>>>>>><<<<<<', process.env.NEXT_PUBLIC_API_URL_CLIENT);
+
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_CLIENT}/api/newsletter/`)
   if (!res.ok) {
     return { message: 'Error al obtener la lista de newsletters', status: res.status }
   }  
@@ -25,7 +27,7 @@ export async function getNewsletterList() {
 }
 
 export async function sendNewsletter(data) {
-  const res = await fetch('/api/newsletter/', {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_CLIENT}/api/newsletter/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

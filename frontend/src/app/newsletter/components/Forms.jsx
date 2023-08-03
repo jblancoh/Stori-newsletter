@@ -13,7 +13,6 @@ const NewsletterForm = () => {
   const [loading, setLoading] = useState(false)
   const [date, setDate] = useState(null)
   const newsletters = useStore(state => state.newsletters)
-  console.log("🚀 ~ file: Forms.jsx:16 ~ NewsletterForm ~ newsletters:", newsletters)
   
   const onSubmit = async (e) => {
     e.preventDefault()
