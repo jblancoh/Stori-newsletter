@@ -11,8 +11,8 @@ Este proyecto es una aplicación web que consta de un frontend y un backend, y s
 1. Clona este repositorio en tu máquina local:
 
 ```bash
-git clone https://github.com/tu_usuario/proyecto-stori-newsletter.git
-cd proyecto-stori-newsletter
+git clone https://github.com/jblancoh/Stori-newsletter.git
+cd Stori-newsletter
 ```
 
 2. Crea los archivos .env necesarios para la configuración del proyecto. Puedes encontrar los archivos de ejemplo en la carpeta `env_examples/`. Copia los archivos de ejemplo y renómbralos como `.env` en el directorio raíz del proyecto:
